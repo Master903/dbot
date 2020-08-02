@@ -5,6 +5,7 @@ from random import randrange
 from discord import utils
 from discord.utils import get
 from discord.ext import commands
+from secret import MyChannelID, RoleID, TOKEN
 
 cat_url = 'https://cdn.discordapp.com/avatars/737244048196370482/7735697349fd235d7b52b84dfaa0ff35.webp?size=128'
 client = commands.Bot(command_prefix = 'm.')
