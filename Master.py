@@ -15,7 +15,7 @@ client.remove_command('help')
 async def on_ready():
 	print('Master#5837 готов к обороне')
 
-	await client.change_presence(status = discord.Status.online, activity = discord.Game('m.help'))
+	await client.change_presence(status = discord.Status.dnd, activity = discord.Game('m.help'))
 
 @client.event
 async def on_member_join(member):
@@ -26,14 +26,14 @@ async def on_member_join(member):
 	embed=discord.Embed(title="Добро пожаловать, удачного времяпровождения!", color=0xfb0404)
 	embed.set_author(name=f"{member.name} присоединился к нашему серверу!")
 	embed.set_thumbnail(url=f"https://priscree.ru/img/746b01b8261c63.jpg")
-	embed.add_field(name="Выдана роль", value=f"{role}", inline=True)
+	embed.add_field(name="Выдана роль", value=f"{role.mention}", inline=True)
 	embed.set_footer(text="Новый участник")
 	await channel.send(embed=embed)
 
 #commands
 
 @client.command(pass_context = True)
-@commands.has_permissions(manage_messages = True)
+@commands.has_guild_permissions(manage_messages = True)
 async def clear(ctx, amount: int):
 	await ctx.message.delete()
 	await ctx.channel.purge(limit = amount)
@@ -45,12 +45,13 @@ async def help(ctx):
 	embed=discord.Embed(title="Настоятельная рекомендация администраторам:", description="Пропишите команду `m.важно`!", color=0x1b27d0)
 	embed.set_author(name="Master-бот", icon_url=cat_url)
 	embed.set_thumbnail(url=cat_url)
-	embed.add_field(name="🤖 Для администраторов", value="`m.kick`, `m.ban`, `m.unban`, `m.важно`", inline=True)
-	embed.add_field(name="👨‍⚖️ Для модераторов", value="`m.clear`, `m.mute`, `m.unmute`, `m.tempmute`", inline=False)
-	embed.add_field(name="😀 Базовые команды", value="`m.help`, `m.info`, `m.ping`", inline=False)
+	embed.add_field(name="🤖 Для администраторов", value="`m.kick`|`m.ban`|`m.unban`|`m.важно`", inline=True)
+	embed.add_field(name="👨‍⚖️ Для модераторов", value="`m.clear`|`m.mute`|`m.unmute`|`m.tempmute`|`m.warn`", inline=False)
+	embed.add_field(name="📝 Информация", value="`m.help`|`m.info`|`m.ping`|`m.uinfo`", inline=False)
 	embed.add_field(name="🥳 Фан-команды", value="`m.rate`", inline=False)
 	embed.add_field(name="📼 Ссылки", value='''`Сервер бота (помощь, идеи и т.п.):` https://discord.gg/Jf3ZBYh
-	`Пригласить бота на сервер:` https://discord.com/api/oauth2/authorize?client_id=737244048196370482&permissions=2147483647&scope=bot''', inline=False)
+	`Пригласить бота на сервер:` https://discord.com/api/oauth2/authorize?client_id=737244048196370482&permissions=1343220807&scope=bot
+	`Наш top.gg:` https://top.gg/bot/737244048196370482''', inline=False)
 	embed.set_footer(text=f"Команда m.help | запросил {ctx.author.name}")
 	await ctx.send(embed=embed)
 
@@ -65,8 +66,8 @@ async def rate(ctx, member: discord.Member):
 	await ctx.send(embed=embed)
 
 @client.command(pass_context = True)
-@commands.has_permissions(administrator = True)
-async def kick(ctx, member: discord.Member, *, reason = 'Остутствует'):
+@commands.has_permissions(kick_members = True)
+async def kick(ctx, member: discord.Member, *, reason = 'Отсутствует'):
 	await ctx.message.delete()
 
 	await member.kick(reason = reason)
@@ -75,8 +76,8 @@ async def kick(ctx, member: discord.Member, *, reason = 'Остутствует'
 	await ctx.send(f'{ctx.author.name}, пользователь `{member.name}` успешно кикнут! ')
 
 @client.command(pass_context = True)
-@commands.has_permissions(administrator = True)
-async def ban(ctx, member: discord.Member, *, reason = 'Остутствует'):
+@commands.has_permissions(ban_members = True)
+async def ban(ctx, member: discord.Member, *, reason = 'Отсутствует'):
 	await ctx.message.delete()
 
 	await member.ban(reason = reason)
@@ -85,7 +86,19 @@ async def ban(ctx, member: discord.Member, *, reason = 'Остутствует')
 	await ctx.send(f'{ctx.author.name}, пользователь `{member.name}` успешно забанен!')
 
 @client.command(pass_context = True)
-@commands.has_permissions(administrator = True)
+@commands.has_permissions(manage_messages = True)
+async def warn(ctx, member: discord.Member, negativ: int = 1, *, reason: str = 'Отсутствует'):
+	await ctx.message.delete()
+
+	embed=discord.Embed(title="Выдано предупреждение!", description=f"Пользователь: {member.mention}", color=0xff0000)
+	embed.set_thumbnail(url="https://static8.depositphotos.com/1431107/1066/i/450/depositphotos_10665820-stock-photo-warning-stamp.jpg")
+	embed.add_field(name="Уровень негативности", value=f"{negativ}", inline=True)
+	embed.add_field(name="Причина", value=f"{reason}", inline=True)
+	embed.set_footer(text="Команда m.warn")
+	await ctx.send(embed=embed)
+
+@client.command(pass_context = True)
+@commands.has_permissions(ban_members = True)
 async def unban(ctx, *, member):
 	await ctx.message.delete()
 
@@ -109,8 +122,9 @@ async def info(ctx):
 Дата создания - `27.07.2020, 12:44:38`
 Библиотека - `discord.py`
 Python - `v3.8.5`
-Версия бота - `v2.1.5`''', inline=True)
-	embed.add_field(name="Системная", value='ОС - `Windows 10`', inline=True)
+Версия бота - `v1.6.2`''', inline=True)
+	embed.add_field(name="Системная", value='''CPU - `Intel(R) Core(TM)`
+ОС - `Windows 10`''', inline=True)
 	embed.add_field(name="Другое", value='Создатели: <@644260697194233856>, <@688333564617555998>, <@679388978989760596>', inline=False)
 	embed.set_footer(text=f"Команда m.info | запросил {ctx.author.name}")
 	await ctx.send(embed=embed)
@@ -127,14 +141,14 @@ async def важно(ctx):
 	await ctx.send(embed=embed)
 
 @client.command(pass_context = True)
-@commands.has_permissions(manage_messages = True)
+@commands.has_permissions(manage_roles = True)
 async def mute(ctx, member: discord.Member, *, reason = 'Отсутствует'):
 	await ctx.message.delete()
 
 	mute_role = discord.utils.get(ctx.message.guild.roles, name = 'Muted')
 
 	await member.add_roles(mute_role, reason = reason)
-	embed=discord.Embed(title=f"Причина: `{reason}`", color=0xfb0404)
+	embed=discord.Embed(title=f"Причина: `{reason}`", color=0xff0000)
 	embed.set_author(name=f"Модератор {ctx.author.name} замутил пользователя {member.name}!")
 	embed.set_thumbnail(url="https://images.discordapp.net/avatars/653176856035721270/371bdaa0d44478e76b23929559750651.png?size=512")
 	embed.set_footer(text="Команда m.mute")
@@ -144,12 +158,12 @@ async def mute(ctx, member: discord.Member, *, reason = 'Отсутствует'
 async def ping(ctx):
 	await ctx.message.delete()
 	embed=discord.Embed(title="Статистика по пингу:", description=f'''🏓 Пинг: `{randrange(248)}ms`
-🏓 Задержка API: `{randrange()}ms`''', color=0x980cca)
+🏓 Задержка API: `{randrange(26)}ms`''', color=0x980cca)
 	embed.set_footer(text=f"Команда m.ping | запросил {ctx.author.name}")
 	await ctx.send(embed=embed)
 
 @client.command(pass_context = True)
-@commands.has_permissions(manage_messages = True)
+@commands.has_permissions(manage_roles = True)
 async def unmute(ctx, member: discord.Member):
 	await ctx.message.delete()
 
@@ -159,7 +173,7 @@ async def unmute(ctx, member: discord.Member):
 	await ctx.send(f'Модератор `{ctx.author.name}` размутил пользователя `{member.name}!`')
 
 @client.command(pass_context = True)
-@commands.has_permissions(manage_messages = True)
+@commands.has_permissions(manage_roles = True)
 async def tempmute(ctx, member: discord.Member, amount: int, *, reason = 'Отсутствует'):
 	await ctx.message.delete()
 
@@ -175,104 +189,112 @@ async def tempmute(ctx, member: discord.Member, amount: int, *, reason = 'Отс
 	await asyncio.sleep(amount)
 	await member.remove_roles(tempmute_role)
 
+@client.command(pass_context = True)
+async def uinfo(ctx, member: discord.Member):
+	await ctx.message.delete()
+
+	embed=discord.Embed(title=f'Информация об участнике {member.name}', description='Без упоминания узнаешь информацию о себе', color=0xb738af)
+	embed.set_thumbnail(url=f"{member.avatar_url}")
+	embed.add_field(name=f"Пользователь:", value=f"{member}")
+	embed.add_field(name=f"ID участника:", value=f"{member.id}", inline=True)
+	embed.add_field(name="Ник на сервере:", value=f"{member.nick}", inline=True)
+	embed.add_field(name="Nitro", value=f"{member.premium_since}", inline=True)
+	embed.add_field(name="Бот:", value=f"{member.bot}", inline=True)
+	embed.add_field(name="Название сервера:", value=f"{member.guild}", inline=True)
+	embed.add_field(name="Статус:", value=f"{member.status}", inline=True)
+	embed.add_field(name='Создал аккаунт:', value=f'{member.created_at}', inline=True)
+	embed.add_field(name='Зашёл на сервер:', value=f'{member.joined_at}', inline=True)
+	embed.set_footer(text=f"Команда m.uinfo | запросил {ctx.author.name}")
+	await ctx.send(embed=embed)
 
 @client.command(pass_context = True)
 @commands.is_owner()
-async def банан(ctx, member: discord.Member, *, reason = 'Остутствует'):
+async def sinfo(ctx, guild: discord.Guild):
 	await ctx.message.delete()
 
-	await member.ban(reason = reason)
-	await member.send(f'''Ты был забанен пользователем `{ctx.author.name}`
-Причина: `{reason}`''')
-	await ctx.send(f'{ctx.author.name}, пользователь `{member.name}` успешно забанен!')
+	embed=discord.Embed(title="Владелец сервера:", description=f"{guild.owner}", color=0x386fb7)
+	embed.set_author(name=f"Информация о сервере {guild.name}", icon_url=f"{guild.icon_url}")
+	embed.set_thumbnail(url=f"{guild.icon_url}")
+	embed.add_field(name='Дата создания:', value=f'{guild.created_at}', inline=True)
+	embed.add_field(name='Специальные эмодзи:', value=f'{guild.emojis}', inline=True)
+	embed.add_field(name='Регион сервера:', value=f'{guild.region}', inline=True)
+	embed.add_field(name='Уровень проверки сервера:', value=f'{guild.verification_level}', inline=True)
+	embed.add_field(name='Уровень буста сервера:', value=f'{guild.premium_tier}', inline=True)
+	embed.add_field(name='Кол-во бустов сервера:', value=f'{guild.premium_subscription_count}', inline=True)
+	embed.add_field(name='Категории:', value=f'{guild.categories}', inline=True)
+	embed.add_field(name='Кол-во участников:', value=f'{guild.member_count}', inline=True)
+	embed.add_field(name='Роли:', value=f'{guild.roles}', inline=True)
+	embed.set_footer(text=f"Команда m.sinfo | запросил {ctx.author.name}")
+	await ctx.send(embed=embed)
 
 @client.command(pass_context = True)
 @commands.is_owner()
-async def разбанан(ctx, *, member):
-	await ctx.message.delete()
-
-	banned_users = await ctx.guild.bans()
-
-	for ban_entry in banned_users:
-		user = ban_entry.user
-
-		await ctx.guild.unban(user)
-		await ctx.send(f'{user.mention} успешно разбанен!')
-		await user.send(f'Ты был разбанен пользователем `{ctx.author.name}`!')
-
-		return
-
-@client.command(pass_context = True)
-@commands.is_owner()
-async def пинок(ctx, member: discord.Member, *, reason = 'Остутствует'):
-	await ctx.message.delete()
-
-	await member.kick(reason = reason)
-	await member.send(f'''Ты был кикнут с сервера пользователем `{ctx.author.name}`
-Причина: `{reason}`''')
-	await ctx.send(f'{ctx.author.name}, пользователь `{member.name}` успешно кикнут! ')
+async def sfh(ctx):
+	message = await ctx.send("I'm Here!)")
+	await asyncio.sleep(3)
+	await message.edit(content="Yes, I'm here!)")
 
 #errors
 
-@client.event
-async def on_command_error(ctx, error):
-	pass
+# @client.event
+# async def on_command_error(ctx, error):
+# 	pass
 
 @clear.error
 async def clear_error(ctx, error):
 	if isinstance(error, commands.MissingPermissions):
 		await ctx.message.delete()
-		await ctx.send(f'{ctx.author.name}, прав нету, куда полез?')
+		await ctx.send(f'{ctx.author.name}, привет! У тебя нет прав для использования этой команды, если хочешь можешь посмотреть какие есть ещё написав `m.help` 🙂')
 
 	if isinstance(error, commands.MissingRequiredArgument):
 		await ctx.message.delete()
-		await ctx.send(f'{ctx.author.name}, ты не указал сколько сообщений хочешь удалить!')
+		await ctx.send(f'{ctx.author.name}, похоже ты не указал сколько сообщений хочешь удалить!')
 
 @важно.error
 async def clear_error(ctx, error):
 	if isinstance(error, commands.MissingPermissions):
 		await ctx.message.delete()
-		await ctx.send(f'{ctx.author.name}, прав нету, куда полез?')
+		await ctx.send(f'{ctx.author.name}, привет! У тебя нет прав для использования этой команды, если хочешь можешь посмотреть какие есть ещё написав `m.help` 🙂')
 
 @mute.error
 async def clear_error(ctx, error):
 	if isinstance(error, commands.MissingPermissions):
 		await ctx.message.delete()
-		await ctx.send(f'{ctx.author.name}, прав нету, куда полез?')
+		await ctx.send(f'{ctx.author.name}, привет! У тебя нет прав для использования этой команды, если хочешь можешь посмотреть какие есть ещё написав `m.help` 🙂')
 
 	if isinstance(error, commands.MissingRequiredArgument):
 		await ctx.message.delete()
-		await ctx.send(f'{ctx.author.name}, ты не указал какого пользователя замутить!')
+		await ctx.send(f'{ctx.author.name}, похоже ты не указал какого пользователя замутить!')
 
 @kick.error
 async def clear_error(ctx, error):
 	if isinstance(error, commands.MissingPermissions):
 		await ctx.message.delete()
-		await ctx.send(f'{ctx.author.name}, прав нету, куда полез?')
+		await ctx.send(f'{ctx.author.name}, привет! У тебя нет прав для использования этой команды, если хочешь можешь посмотреть какие есть ещё написав `m.help` 🙂')
 
 	if isinstance(error, commands.MissingRequiredArgument):
 		await ctx.message.delete()
-		await ctx.send(f'{ctx.author.name}, ты не указал какого пользователя кикнуть!')
+		await ctx.send(f'{ctx.author.name}, похоже ты не указал какого пользователя кикнуть!')
 
 @ban.error
 async def clear_error(ctx, error):
 	if isinstance(error, commands.MissingPermissions):
 		await ctx.message.delete()
-		await ctx.send(f'{ctx.author.name}, прав нету, куда полез?')
+		await ctx.send(f'{ctx.author.name}, привет! У тебя нет прав для использования этой команды, если хочешь можешь посмотреть какие есть ещё написав `m.help` 🙂')
 
 	if isinstance(error, commands.MissingRequiredArgument):
 		await ctx.message.delete()
-		await ctx.send(f'{ctx.author.name}, ты не указал какого пользователя забанить!')
+		await ctx.send(f'{ctx.author.name}, похоже ты не указал какого пользователя забанить!')
 
 @unban.error
 async def clear_error(ctx, error):
 	if isinstance(error, commands.MissingPermissions):
 		await ctx.message.delete()
-		await ctx.send(f'{ctx.author.name}, прав нету, куда полез?')
+		await ctx.send(f'{ctx.author.name}, привет! У тебя нет прав для использования этой команды, если хочешь можешь посмотреть какие есть ещё написав `m.help` 🙂')
 
 	if isinstance(error, commands.MissingRequiredArgument):
 		await ctx.message.delete()
-		await ctx.send(f'{ctx.author.name}, ты не указал какого пользователя разбанить!')
+		await ctx.send(f'{ctx.author.name}, похоже ты не указал какого пользователя разбанить!')
 
 @rate.error
 async def clear_error(ctx, error):
@@ -284,6 +306,38 @@ async def clear_error(ctx, error):
 		embed.add_field(name="😃 Максимальная оценка:", value="100 баллов", inline=True)
 		embed.set_footer(text="Команда m.оценка")
 		await ctx.send(embed=embed)
+
+@uinfo.error
+async def clear_error(ctx, error):
+	if isinstance(error, commands.MissingRequiredArgument):
+		await ctx.message.delete()
+
+		user = ctx.message.author
+
+		embed=discord.Embed(title=f'Информация об участнике {ctx.author.name}', description='С упоминанием узнаешь информацию о другом участнике', color=0xb738af)
+		embed.set_thumbnail(url=f"{user.avatar_url}")
+		embed.add_field(name=f"Пользователь:", value=f"{user}")
+		embed.add_field(name=f"ID участника:", value=f"{user.id}", inline=True)
+		embed.add_field(name="Ник на сервере:", value=f"{user.nick}", inline=True)
+		embed.add_field(name="Nitro", value=f"{user.premium_since}", inline=True)
+		embed.add_field(name="Бот:", value=f"{user.bot}", inline=True)
+		embed.add_field(name="Название сервера:", value=f"{user.guild}", inline=True)
+		embed.add_field(name="Статус:", value=f"{user.status}", inline=True)
+		embed.add_field(name='Создал аккаунт:', value=f'{user.created_at}', inline=True)
+		embed.add_field(name='Зашёл на сервер:', value=f'{user.joined_at}', inline=True)
+		embed.set_footer(text=f"Команда m.uinfo | запросил {ctx.author.name}")
+		await ctx.send(embed=embed)
+
+@warn.error
+async def clear_error(ctx, error):
+	if isinstance(error, commands.MissingRequiredArgument):
+		await ctx.send(f'{ctx.author.name}, похоже ты не указал какому пользователю выдать предупреждение!')
+
+	if isinstance(error, commands.BadArgument):
+		await ctx.send(f'{ctx.author.name}, похоже ты что-то указал неправильно, перепроверь на всякий случай 😉')
+
+	if isinstance(error, commands.MissingPermissions):
+		await ctx.send(f'{ctx.author.name}, ')	
 
 #Connect
 
