@@ -37,7 +37,9 @@ async def on_member_join(member):
 async def clear(ctx, amount: int):
 	await ctx.message.delete()
 	await ctx.channel.purge(limit = amount)
-	# await ctx.send(f'Удалено {amount} сообщений')
+	clir = await ctx.send(f'Удалено {amount} сообщений')
+	await asyncio.sleep(4)
+	await clir.delete()
 
 @client.command(pass_context = True)
 async def help(ctx):
@@ -236,9 +238,9 @@ async def sfh(ctx):
 
 #errors
 
-# @client.event
-# async def on_command_error(ctx, error):
-# 	pass
+@client.event
+async def on_command_error(ctx, error):
+	pass
 
 @clear.error
 async def clear_error(ctx, error):
@@ -337,7 +339,7 @@ async def clear_error(ctx, error):
 		await ctx.send(f'{ctx.author.name}, похоже ты что-то указал неправильно, перепроверь на всякий случай 😉')
 
 	if isinstance(error, commands.MissingPermissions):
-		await ctx.send(f'{ctx.author.name}, ')	
+		await ctx.send(f'{ctx.author.name}, слушай, ну куда ты лезешь? Не видишь чтоли что прав нет?..')	
 
 #Connect
 
