@@ -5,6 +5,7 @@ from random import randrange
 from discord import utils
 from discord.utils import get
 from discord.ext import commands
+from Cybernator import Paginator as pag
 from secret import MyChannelID, RoleID, TOKEN
 
 cat_url = 'https://cdn.discordapp.com/avatars/737244048196370482/7735697349fd235d7b52b84dfaa0ff35.webp?size=128'
@@ -32,16 +33,16 @@ async def on_member_join(member):
 
 #commands
 
-@client.command(pass_context = True)
+@client.command()
 @commands.has_guild_permissions(manage_messages = True)
 async def clear(ctx, amount: int):
 	await ctx.message.delete()
 	await ctx.channel.purge(limit = amount)
-	clir = await ctx.send(f'Удалено {amount} сообщений')
+	clir = await ctx.send(f'Удалено {amount} сообщений(е, я)')
 	await asyncio.sleep(4)
 	await clir.delete()
 
-@client.command(pass_context = True)
+@client.command()
 async def help(ctx):
 	await ctx.message.delete()
 	embed=discord.Embed(title="Настоятельная рекомендация администраторам:", description="Пропишите команду `m.важно`!", color=0x1b27d0)
@@ -55,9 +56,9 @@ async def help(ctx):
 	`Пригласить бота на сервер:` https://discord.com/api/oauth2/authorize?client_id=737244048196370482&permissions=1343220807&scope=bot
 	`Наш top.gg:` https://top.gg/bot/737244048196370482''', inline=False)
 	embed.set_footer(text=f"Команда m.help | запросил {ctx.author.name}")
-	await ctx.send(embed=embed)
+	await ctx.send(embed=embed1)
 
-@client.command(pass_context = True)
+@client.command()
 async def rate(ctx, member: discord.Member):
 	await ctx.message.delete()
 	embed=discord.Embed(title=f"{ctx.author.name}, хорошо, я оценю пользователя {member.name} 😉", color=0xf29a36)
@@ -67,7 +68,7 @@ async def rate(ctx, member: discord.Member):
 	embed.set_footer(text=f"Команда m.rate | запросил {ctx.author.name}")
 	await ctx.send(embed=embed)
 
-@client.command(pass_context = True)
+@client.command()
 @commands.has_permissions(kick_members = True)
 async def kick(ctx, member: discord.Member, *, reason = 'Отсутствует'):
 	await ctx.message.delete()
@@ -77,7 +78,7 @@ async def kick(ctx, member: discord.Member, *, reason = 'Отсутствует'
 Причина: `{reason}`''')
 	await ctx.send(f'{ctx.author.name}, пользователь `{member.name}` успешно кикнут! ')
 
-@client.command(pass_context = True)
+@client.command()
 @commands.has_permissions(ban_members = True)
 async def ban(ctx, member: discord.Member, *, reason = 'Отсутствует'):
 	await ctx.message.delete()
@@ -87,7 +88,7 @@ async def ban(ctx, member: discord.Member, *, reason = 'Отсутствует')
 Причина: `{reason}`''')
 	await ctx.send(f'{ctx.author.name}, пользователь `{member.name}` успешно забанен!')
 
-@client.command(pass_context = True)
+@client.command()
 @commands.has_permissions(manage_messages = True)
 async def warn(ctx, member: discord.Member, negativ: int = 1, *, reason: str = 'Отсутствует'):
 	await ctx.message.delete()
@@ -99,7 +100,7 @@ async def warn(ctx, member: discord.Member, negativ: int = 1, *, reason: str = '
 	embed.set_footer(text="Команда m.warn")
 	await ctx.send(embed=embed)
 
-@client.command(pass_context = True)
+@client.command()
 @commands.has_permissions(ban_members = True)
 async def unban(ctx, *, member):
 	await ctx.message.delete()
@@ -115,7 +116,7 @@ async def unban(ctx, *, member):
 
 		return
 
-@client.command(pass_context = True)
+@client.command()
 async def info(ctx):
 	await ctx.message.delete()
 	embed=discord.Embed(title="Информация о боте Master", color=0xf2eb1c)
@@ -131,7 +132,7 @@ Python - `v3.8.5`
 	embed.set_footer(text=f"Команда m.info | запросил {ctx.author.name}")
 	await ctx.send(embed=embed)
 
-@client.command(pass_context = True)
+@client.command()
 @commands.has_permissions(administrator = True)
 async def важно(ctx):
 	await ctx.message.delete()
@@ -142,7 +143,7 @@ async def важно(ctx):
 	embed.set_footer(text=f"Команда m.важно | запросил {ctx.author.name}")
 	await ctx.send(embed=embed)
 
-@client.command(pass_context = True)
+@client.command()
 @commands.has_permissions(manage_roles = True)
 async def mute(ctx, member: discord.Member, *, reason = 'Отсутствует'):
 	await ctx.message.delete()
@@ -156,7 +157,7 @@ async def mute(ctx, member: discord.Member, *, reason = 'Отсутствует'
 	embed.set_footer(text="Команда m.mute")
 	await ctx.send(embed=embed)
 
-@client.command(pass_context = True)
+@client.command()
 async def ping(ctx):
 	await ctx.message.delete()
 	embed=discord.Embed(title="Статистика по пингу:", description=f'''🏓 Пинг: `{randrange(248)}ms`
@@ -164,7 +165,7 @@ async def ping(ctx):
 	embed.set_footer(text=f"Команда m.ping | запросил {ctx.author.name}")
 	await ctx.send(embed=embed)
 
-@client.command(pass_context = True)
+@client.command()
 @commands.has_permissions(manage_roles = True)
 async def unmute(ctx, member: discord.Member):
 	await ctx.message.delete()
@@ -174,7 +175,7 @@ async def unmute(ctx, member: discord.Member):
 	await member.remove_roles(unmute_role)
 	await ctx.send(f'Модератор `{ctx.author.name}` размутил пользователя `{member.name}!`')
 
-@client.command(pass_context = True)
+@client.command()
 @commands.has_permissions(manage_roles = True)
 async def tempmute(ctx, member: discord.Member, amount: int, *, reason = 'Отсутствует'):
 	await ctx.message.delete()
@@ -191,7 +192,7 @@ async def tempmute(ctx, member: discord.Member, amount: int, *, reason = 'Отс
 	await asyncio.sleep(amount)
 	await member.remove_roles(tempmute_role)
 
-@client.command(pass_context = True)
+@client.command()
 async def uinfo(ctx, member: discord.Member):
 	await ctx.message.delete()
 
@@ -209,7 +210,7 @@ async def uinfo(ctx, member: discord.Member):
 	embed.set_footer(text=f"Команда m.uinfo | запросил {ctx.author.name}")
 	await ctx.send(embed=embed)
 
-@client.command(pass_context = True)
+@client.command()
 @commands.is_owner()
 async def sinfo(ctx, guild: discord.Guild):
 	await ctx.message.delete()
@@ -229,12 +230,19 @@ async def sinfo(ctx, guild: discord.Guild):
 	embed.set_footer(text=f"Команда m.sinfo | запросил {ctx.author.name}")
 	await ctx.send(embed=embed)
 
-@client.command(pass_context = True)
+@client.command()
 @commands.is_owner()
 async def sfh(ctx):
 	message = await ctx.send("I'm Here!)")
 	await asyncio.sleep(3)
 	await message.edit(content="Yes, I'm here!)")
+
+@client.command()
+@commands.is_owner()
+async def say(ctx, *, sayt):
+	await ctx.message.delete()
+
+	await ctx.send(f'{sayt}')
 
 #errors
 
@@ -246,7 +254,7 @@ async def on_command_error(ctx, error):
 async def clear_error(ctx, error):
 	if isinstance(error, commands.MissingPermissions):
 		await ctx.message.delete()
-		await ctx.send(f'{ctx.author.name}, привет! У тебя нет прав для использования этой команды, если хочешь можешь посмотреть какие есть ещё написав `m.help` 🙂')
+		await ctx.send(f'{ctx.author.name}, У тебя нет прав для использования это команды.')
 
 	if isinstance(error, commands.MissingRequiredArgument):
 		await ctx.message.delete()
@@ -256,13 +264,13 @@ async def clear_error(ctx, error):
 async def clear_error(ctx, error):
 	if isinstance(error, commands.MissingPermissions):
 		await ctx.message.delete()
-		await ctx.send(f'{ctx.author.name}, привет! У тебя нет прав для использования этой команды, если хочешь можешь посмотреть какие есть ещё написав `m.help` 🙂')
+		await ctx.send(f'{ctx.author.name}, эта команда для администраторов, ты не можешь её использовать.')
 
 @mute.error
 async def clear_error(ctx, error):
 	if isinstance(error, commands.MissingPermissions):
 		await ctx.message.delete()
-		await ctx.send(f'{ctx.author.name}, привет! У тебя нет прав для использования этой команды, если хочешь можешь посмотреть какие есть ещё написав `m.help` 🙂')
+		await ctx.send(f'{ctx.author.name}, у тебя нет прав для того чтобы мутить пользователей.')
 
 	if isinstance(error, commands.MissingRequiredArgument):
 		await ctx.message.delete()
@@ -272,7 +280,7 @@ async def clear_error(ctx, error):
 async def clear_error(ctx, error):
 	if isinstance(error, commands.MissingPermissions):
 		await ctx.message.delete()
-		await ctx.send(f'{ctx.author.name}, привет! У тебя нет прав для использования этой команды, если хочешь можешь посмотреть какие есть ещё написав `m.help` 🙂')
+		await ctx.send(f'{ctx.author.name}, у тебя нет прав для того чтобы кикать пользователей.')
 
 	if isinstance(error, commands.MissingRequiredArgument):
 		await ctx.message.delete()
@@ -282,7 +290,7 @@ async def clear_error(ctx, error):
 async def clear_error(ctx, error):
 	if isinstance(error, commands.MissingPermissions):
 		await ctx.message.delete()
-		await ctx.send(f'{ctx.author.name}, привет! У тебя нет прав для использования этой команды, если хочешь можешь посмотреть какие есть ещё написав `m.help` 🙂')
+		await ctx.send(f'{ctx.author.name}, у тебя нет прав для того чтобы банить пользователей.')
 
 	if isinstance(error, commands.MissingRequiredArgument):
 		await ctx.message.delete()
@@ -292,7 +300,7 @@ async def clear_error(ctx, error):
 async def clear_error(ctx, error):
 	if isinstance(error, commands.MissingPermissions):
 		await ctx.message.delete()
-		await ctx.send(f'{ctx.author.name}, привет! У тебя нет прав для использования этой команды, если хочешь можешь посмотреть какие есть ещё написав `m.help` 🙂')
+		await ctx.send(f'{ctx.author.name}, у тебя нет прав для того чтобы разбанивать пользователей.')
 
 	if isinstance(error, commands.MissingRequiredArgument):
 		await ctx.message.delete()
@@ -336,10 +344,10 @@ async def clear_error(ctx, error):
 		await ctx.send(f'{ctx.author.name}, похоже ты не указал какому пользователю выдать предупреждение!')
 
 	if isinstance(error, commands.BadArgument):
-		await ctx.send(f'{ctx.author.name}, похоже ты что-то указал неправильно, перепроверь на всякий случай 😉')
+		await ctx.send(f'{ctx.author.name}, похоже ты что-то указал неправильно! Вот пример: m.warn <@737244048196370482> 11 тест')
 
 	if isinstance(error, commands.MissingPermissions):
-		await ctx.send(f'{ctx.author.name}, слушай, ну куда ты лезешь? Не видишь чтоли что прав нет?..')	
+		await ctx.send(f'{ctx.author.name}, у тебя нет прав чтобы давать пользователям варны.')	
 
 #Connect
 
