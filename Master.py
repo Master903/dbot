@@ -50,13 +50,14 @@ async def help(ctx):
 	embed.set_thumbnail(url=cat_url)
 	embed.add_field(name="🤖 Для администраторов", value="`m.kick`|`m.ban`|`m.unban`|`m.важно`", inline=True)
 	embed.add_field(name="👨‍⚖️ Для модераторов", value="`m.clear`|`m.mute`|`m.unmute`|`m.tempmute`|`m.warn`", inline=False)
-	embed.add_field(name="📝 Информация", value="`m.help`|`m.info`|`m.ping`|`m.uinfo`", inline=False)
+	embed.add_field(name="📝 Информация", value="`m.help`|`m.info`|`m.ping`|`m.uinfo`|`m.idea`", inline=False)
 	embed.add_field(name="🥳 Фан-команды", value="`m.rate`", inline=False)
 	embed.add_field(name="📼 Ссылки", value='''`Сервер бота (помощь, идеи и т.п.):` https://discord.gg/Jf3ZBYh
 	`Пригласить бота на сервер:` https://discord.com/api/oauth2/authorize?client_id=737244048196370482&permissions=1343220807&scope=bot
 	`Наш top.gg:` https://top.gg/bot/737244048196370482''', inline=False)
+	embed.add_field(name="⛓️ Только для создателей", value="`m.hey`|`m.say`|`m.logout`", inline=False)
 	embed.set_footer(text=f"Команда m.help | запросил {ctx.author.name}")
-	await ctx.send(embed=embed1)
+	await ctx.send(embed=embed)
 
 @client.command()
 async def rate(ctx, member: discord.Member):
@@ -199,7 +200,7 @@ async def uinfo(ctx, member: discord.Member):
 	embed=discord.Embed(title=f'Информация об участнике {member.name}', description='Без упоминания узнаешь информацию о себе', color=0xb738af)
 	embed.set_thumbnail(url=f"{member.avatar_url}")
 	embed.add_field(name=f"Пользователь:", value=f"{member}")
-	embed.add_field(name=f"ID участника:", value=f"{member.id}", inline=True)
+	embed.add_field(name=f"ID:", value=f"{member.id}", inline=True)
 	embed.add_field(name="Ник на сервере:", value=f"{member.nick}", inline=True)
 	embed.add_field(name="Nitro", value=f"{member.premium_since}", inline=True)
 	embed.add_field(name="Бот:", value=f"{member.bot}", inline=True)
@@ -209,6 +210,15 @@ async def uinfo(ctx, member: discord.Member):
 	embed.add_field(name='Зашёл на сервер:', value=f'{member.joined_at}', inline=True)
 	embed.set_footer(text=f"Команда m.uinfo | запросил {ctx.author.name}")
 	await ctx.send(embed=embed)
+
+@client.command()
+async def idea(ctx, *, idea):
+	await ctx.message.delete()
+
+	idea_chnl = client.get_channel(739210194575425629)
+
+	await idea_chnl.send(f'{idea}')
+	await ctx.send(f'{ctx.author.name}, ваша идея отправлена на рассмотрение.')
 
 @client.command()
 @commands.is_owner()
@@ -232,7 +242,9 @@ async def sinfo(ctx, guild: discord.Guild):
 
 @client.command()
 @commands.is_owner()
-async def sfh(ctx):
+async def hey(ctx):
+	await ctx.message.delete()
+
 	message = await ctx.send("I'm Here!)")
 	await asyncio.sleep(3)
 	await message.edit(content="Yes, I'm here!)")
@@ -244,11 +256,19 @@ async def say(ctx, *, sayt):
 
 	await ctx.send(f'{sayt}')
 
+@client.command()
+@commands.is_owner()
+async def logout(ctx):
+	await ctx.message.delete()
+
+	await ctx.send('Пока-пока, я отключаюсь 👋')
+	await client.logout()
+
 #errors
 
-@client.event
-async def on_command_error(ctx, error):
-	pass
+# @client.event
+# async def on_command_error(ctx, error):
+# 	pass
 
 @clear.error
 async def clear_error(ctx, error):
